@@ -17,7 +17,6 @@ import (
 func main() {
 
 	serverurl, apiappend, secret, network := getConnDetails()
-
 	nmdns, err := getNetmakerDNS(serverurl, apiappend, secret)
 	if err != nil {
 		log.Fatal(err)
@@ -30,7 +29,6 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	log.Println("success")
 }
 
 func getConnDetails() (string, string, string, string) {
@@ -92,7 +90,6 @@ func compareAndPush(nmdns []DNSEntry, k8sdns []api.Service, serverurl string, ne
 	var err error
 	for _, service := range k8sdns {
 		dnsname := service.ObjectMeta.Name +"."+service.ObjectMeta.Namespace
-		log.Println(dnsname)
 		found := false
 		for _, entry := range nmdns {
 			if entry.Name == dnsname {
@@ -154,6 +151,7 @@ func createUpdateDNS(crudop string, serverurl string, apiappend string, secret s
         if resp.StatusCode != http.StatusOK {
                 err = errors.New("Bad response from server "+strconv.Itoa(resp.StatusCode))
         }
+	log.Println("pushing",entry)
         return err
 }
 

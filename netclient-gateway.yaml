@@ -1,0 +1,55 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netclient-gateway
+  labels:
+    app: netclient-gateway
+spec:
+  selector:
+    matchLabels:
+      app: netclient-gateway
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: netclient-gateway
+    spec:
+      hostNetwork: true
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: gateway
+                operator: In
+                values:
+                - "true"
+      containers:
+      - name: netclient-gateway
+        image: gravitl/netclient:v0.7.6.1
+        command: ['bash', '-c', "/root/netclient join -t $ACCESS_TOKEN --daemon off --dnson no --name k8s-gw --port 51822; while true; do /root/netclient checkin -n $NETWORK; sleep $SLEEP; done"]
+        env:
+        - name: ACCESS_TOKEN
+          value: "XXXX"
+        - name: NETWORK
+          value: "YYYY"
+        - name: SLEEP
+          value: "20"
+        volumeMounts:
+        - mountPath: /etc/netclient
+          name: etc-netclient
+        - mountPath: /usr/bin/wg
+          name: wg
+        securityContext:
+          privileged: true
+      volumes:
+      - hostPath:
+          path: /etc/netclient
+          type: DirectoryOrCreate
+        name: etc-netclient
+      - hostPath:
+          path: /usr/bin/wg
+          type: File
+        name: wg 

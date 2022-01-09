@@ -1,2 +1,4 @@
-# netmak8s
-Cross-cluster service discovery over the fastest possible VPN connections.
+# Netmak8s
+
+This repository contains code and examples for running Kubernetes with Netmaker. See https://nm-k8s.readthedocs.io for more information.
+

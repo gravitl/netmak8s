@@ -16,7 +16,7 @@ spec:
       hostNetwork: true
       containers:
       - name: netclient
-        image: gravitl/netclient:v0.9.3
+        image: gravitl/netclient:v0.9.3-kernel
         env:
         - name: NETCLIENT_ROAMING
           value: "no"
@@ -33,6 +33,8 @@ spec:
         volumeMounts:
         - mountPath: /etc/netclient
           name: etc-netclient
+        - mountPath: /usr/bin/wg
+          name: wg
         securityContext:
           privileged: true
       volumes:
@@ -40,3 +42,7 @@ spec:
           path: /etc/netclient
           type: DirectoryOrCreate
         name: etc-netclient
+      - hostPath:
+          path: /usr/bin/wg
+          type: File
+        name: wg

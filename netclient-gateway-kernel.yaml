@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: netclient-gateway
+  labels:
+    app: netclient-gateway
+spec:
+  selector:
+    matchLabels:
+      app: netclient-gateway
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: netclient-gateway
+    spec:
+      hostNetwork: true
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: gateway
+                operator: In
+                values:
+                - "true"
+      containers:
+      - name: netclient
+        image: gravitl/netclient:v0.9.3-kernel
+        env:
+        - name: NETCLIENT_ROAMING
+          value: "no"
+        - name: NETCLIENT_PORT
+          value: "51822"
+        - name: NETCLIENT_IS_STATIC
+          value: "yes"
+        - name: NETCLIENT_NAME
+          value: "k8s-gw"
+        - name: NETCLIENT_ENDPOINT
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: TOKEN
+          value: "TOKEN_VALUE"
+        volumeMounts:
+        - mountPath: /etc/netclient
+          name: etc-netclient
+        - mountPath: /usr/bin/wg
+          name: wg
+        securityContext:
+          privileged: true
+      volumes:
+      - hostPath:
+          path: /etc/netclient
+          type: DirectoryOrCreate
+        name: etc-netclient
+      - hostPath:
+          path: /usr/bin/wg
+          type: File
+        name: wg

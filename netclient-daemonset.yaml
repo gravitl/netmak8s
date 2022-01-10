@@ -16,20 +16,23 @@ spec:
       hostNetwork: true
       containers:
       - name: netclient
-        image: gravitl/netclient:v0.7.6.1
-        command: ['bash', '-c', "/root/netclient join -t $ACCESS_TOKEN --daemon off --dnson no; while true; do /root/netclient checkin -n $NETWORK; sleep $SLEEP; done"]
+        image: gravitl/netclient:v0.9.3
         env:
-        - name: ACCESS_TOKEN
-          value: "XXXX"
-        - name: NETWORK
-          value: "YYYY"
-        - name: SLEEP
-          value: "20"
+        - name: NETCLIENT_ROAMING
+          value: "no"
+        - name: NETCLIENT_PORT
+          value: "51821"
+        - name: NETCLIENT_IS_STATIC
+          value: "yes"
+        - name: NETCLIENT_ENDPOINT
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: TOKEN
+          value: "TOKEN_VALUE"
         volumeMounts:
         - mountPath: /etc/netclient
           name: etc-netclient
-        - mountPath: /usr/bin/wg
-          name: wg
         securityContext:
           privileged: true
       volumes:
@@ -37,7 +40,3 @@ spec:
           path: /etc/netclient
           type: DirectoryOrCreate
         name: etc-netclient
-      - hostPath:
-          path: /usr/bin/wg
-          type: File
-        name: wg

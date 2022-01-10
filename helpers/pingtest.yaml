@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: pingtest
+  labels:
+    app: pingtest
+spec:
+  selector:
+    matchLabels:
+      app: pingtest
+  template:
+    metadata:
+      labels:
+        app: pingtest
+    spec:
+      containers:
+      - name: busybox
+        image: busybox
+        command: ["/bin/sh", "-ec", "sleep 10000"]

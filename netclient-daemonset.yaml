@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: netclient
+  labels:
+    app: netclient
+spec:
+  selector:
+    matchLabels:
+      app: netclient
+  template:
+    metadata:
+      labels:
+        app: netclient
+    spec:
+      hostNetwork: true
+      containers:
+      - name: netclient
+        image: gravitl/netclient:v0.9.3
+        env:
+        - name: NETCLIENT_ROAMING
+          value: "no"
+        - name: NETCLIENT_PORT
+          value: "51821"
+        - name: NETCLIENT_IS_STATIC
+          value: "yes"
+        - name: NETCLIENT_ENDPOINT
+          valueFrom:
+            fieldRef:
+              fieldPath: status.hostIP
+        - name: TOKEN
+          value: "TOKEN_VALUE"
+        volumeMounts:
+        - mountPath: /etc/netclient
+          name: etc-netclient
+        securityContext:
+          privileged: true
+      volumes:
+      - hostPath:
+          path: /etc/netclient
+          type: DirectoryOrCreate
+        name: etc-netclient

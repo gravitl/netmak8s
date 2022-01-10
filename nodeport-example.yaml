@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: netclient
+  name: netclient-nodeport
+spec:
+  externalTrafficPolicy: Local
+  type: NodePort
+  ports:
+  - port: 31821
+    nodePort: 31821
+    protocol: UDP
+    targetPort: 31821
+    name: wg-iface-31821
+  selector:
+    app: netclient
